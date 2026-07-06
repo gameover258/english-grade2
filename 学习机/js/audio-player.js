@@ -125,32 +125,53 @@
   /** 更新浮动指示器 */
   function updateIndicator() {
     var el = document.getElementById('audio-indicator');
-    if (!el) return;
+    var icon = document.getElementById('ai-icon');
+    var label = document.getElementById('ai-label');
+    var time = document.getElementById('ai-time');
+    var menu = document.getElementById('indicator-menu');
     var track = window.__currentTrack;
     var audio = window.__globalAudio;
 
     if (!track || !audio) {
-      el.style.display = 'none';
+      if (el) el.style.display = 'none';
+      if (menu) { menu.classList.remove('open'); menu.innerHTML = ''; }
       return;
     }
 
-    el.style.display = 'flex';
+    if (el) el.style.display = 'flex';
     var dur = audio.duration || 0;
     var remaining = dur - (audio.currentTime || 0);
 
-    if (audio.paused) {
-      el.innerHTML = '<span style="font-size:14px;">⏸</span> <span style="font-weight:600;">' + track.label + '</span> <span style="opacity:0.7;">暂停中</span>';
-    } else if (dur && isFinite(dur)) {
-      el.innerHTML = '<span style="font-size:14px;">🎵</span> <span style="font-weight:600;">' + track.label + '</span> <span style="opacity:0.8;">' + fmt(remaining) + '</span>';
-    } else {
-      el.innerHTML = '<span style="font-size:14px;">🎵</span> <span style="font-weight:600;">' + track.label + '</span> <span style="opacity:0.7;">加载中…</span>';
+    if (icon) {
+      icon.textContent = audio.paused ? '⏸' : '🎵';
+    }
+    if (label) {
+      label.textContent = track.label;
+    }
+    if (time) {
+      if (audio.paused) {
+        time.textContent = '暂停中';
+      } else if (dur && isFinite(dur)) {
+        time.textContent = fmt(remaining);
+      } else {
+        time.textContent = '加载中…';
+      }
     }
   }
+
+  /** 切换指示器二级菜单 */
+  window.toggleIndicatorMenu = function() {
+    var indicator = document.getElementById('audio-indicator');
+    var menu = document.getElementById('indicator-menu');
+    if (!indicator || !menu) return;
+    indicator.classList.toggle('open');
+    menu.classList.toggle('open');
+  };
 
   // 点击课本区域暂停/继续
   document.addEventListener('click', function(e) {
     // 不拦截按钮、链接、叠加层内的点击
-    if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.overlay-active') || e.target.closest('#bottom-sheet') || e.target.closest('#mobile-bar')) return;
+    if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.overlay-active') || e.target.closest('#bottom-sheet') || e.target.closest('#mobile-bar') || e.target.closest('#audio-indicator') || e.target.closest('#indicator-menu')) return;
     if (window.__globalAudio || window.__currentTrack) {
       window.togglePlayPause();
     }

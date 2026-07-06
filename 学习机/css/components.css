@@ -324,8 +324,34 @@
   color: #fff; font-size: 13px; font-family: var(--font-main);
   align-items: center; gap: 8px; white-space: nowrap;
   box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-  transition: opacity 0.2s ease;
+  cursor: pointer; user-select: none;
 }
+.audio-indicator.open { border-radius: 18px 18px 4px 4px; }
+
+/* 指示器二级菜单 */
+.indicator-menu {
+  display: none;
+  position: fixed; top: 88px; left: 50%; transform: translateX(-50%);
+  z-index: 399; padding: 8px; border-radius: 4px 4px 14px 14px;
+  background: rgba(30,30,30,0.88); backdrop-filter: blur(12px);
+  color: #fff; font-size: 13px; font-family: var(--font-main);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  flex-direction: column; gap: 2px; min-width: 180px;
+}
+.indicator-menu.open { display: flex; }
+
+.im-item {
+  display: block; width: 100%; padding: 8px 14px; border: none;
+  border-radius: 6px; background: rgba(255,255,255,0.1);
+  color: #fff; font-size: 12px; cursor: pointer;
+  font-family: var(--font-main); text-align: left;
+  white-space: nowrap; transition: background 0.15s;
+}
+.im-item:hover { background: rgba(255,255,255,0.2); }
+.im-item.im-video { background: rgba(100,100,255,0.2); }
+.im-item.im-video:hover { background: rgba(100,100,255,0.35); }
+
 @media (max-width: 768px) {
   .audio-indicator { top: 48px; font-size: 12px; padding: 6px 14px; }
+  .indicator-menu { top: 82px; }
 }

@@ -44,7 +44,13 @@
     </div>
 
         <!-- ===== 移动端浮动底栏 ===== -->
-        <div id="audio-indicator" class="audio-indicator"></div>
+        <div id="audio-indicator" class="audio-indicator" onclick="toggleIndicatorMenu()">
+      <span id="ai-icon">🎵</span>
+      <span id="ai-label"></span>
+      <span id="ai-time"></span>
+      <span id="ai-arrow" style="font-size:10px;opacity:0.6;">▼</span>
+    </div>
+    <div id="indicator-menu" class="indicator-menu"></div>
 
     <div id="mobile-bar">
       <button id="mobile-unit-btn" class="mobile-unit-btn">● <span id="mobile-unit-label">Unit 1</span> · <span id="mobile-page-label">P5</span></button>
