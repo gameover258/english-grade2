@@ -49,6 +49,24 @@
     if (e.key === 'ArrowRight') { nextPage(); e.preventDefault(); }
   });
 
+  // 移动端左右滑动翻页
+  var touchStartX = 0, touchStartY = 0;
+  document.addEventListener('touchstart', function(e) {
+    if (document.querySelector('.overlay-active')) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    if (document.querySelector('.overlay-active')) return;
+    var dx = (e.changedTouches[0] || {}).clientX - touchStartX || 0;
+    var dy = (e.changedTouches[0] || {}).clientY - touchStartY || 0;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) nextPage();
+      else prevPage();
+    }
+  });
+
   function showOverlay(id, renderFn) { document.getElementById(id).className = 'overlay-active'; renderFn(); }
   function stopAllAudio() {
     // 停止词汇表独立音频
@@ -185,7 +203,7 @@
   function updateMobileBar() {
     if (!isMobile()) return;
     var bar = document.getElementById('mobile-bar');
-    if (bar) bar.style.display = 'flex';
+    bar.classList.add('mobile-visible');
     var ul = document.getElementById('mobile-unit-label');
     var pl = document.getElementById('mobile-page-label');
     if (ul) ul.textContent = state.currentUnit.name;
@@ -220,11 +238,13 @@
   }
 
   window.showBottomSheet = function() {
-    document.getElementById('bottom-sheet').className = 'open';
+    var sheet = document.getElementById('bottom-sheet');
+    sheet.classList.add('open');
     renderSheetUnits();
+    resetHideTimer();
   };
   window.hideBottomSheet = function() {
-    document.getElementById('bottom-sheet').className = '';
+    document.getElementById('bottom-sheet').classList.remove('open');
   };
 
   // 浮动底栏自动隐藏
@@ -251,7 +271,8 @@
 
   // 初始化移动端
   if (isMobile()) {
-    document.getElementById('mobile-bar').style.display = 'flex';
+    var bar = document.getElementById('mobile-bar');
+    bar.classList.add('mobile-visible');
     document.getElementById('mobile-unit-btn').onclick = function() { showBottomSheet(); };
     document.getElementById('mobile-menu-btn').onclick = function() { showBottomSheet(); };
     updateMobileBar();

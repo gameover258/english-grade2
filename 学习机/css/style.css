@@ -108,8 +108,9 @@ html, body { height: 100%; font-family: var(--font-main); font-size: 15px; color
   #textbook-view { height: 100%; }
   #pdf-container { height: 100%; }
 
-  /* 浮动底栏（桌面端隐藏） */
-  #mobile-bar {
+  /* 浮动底栏 */
+  #mobile-bar { display: none; }
+  #mobile-bar.mobile-visible {
     display: flex !important;
     position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
     z-index: 500; gap: 6px; align-items: center;
@@ -136,8 +137,11 @@ html, body { height: 100%; font-family: var(--font-main); font-size: 15px; color
   }
 
   /* 底部弹出面板 */
-  #bottom-sheet { display: none; }
-  #bottom-sheet.open { display: block; }
+  #bottom-sheet {
+    position: fixed; inset: 0; z-index: 600;
+    pointer-events: none; opacity: 0; transition: opacity 0.2s;
+  }
+  #bottom-sheet.open { pointer-events: auto; opacity: 1; }
 
   .sheet-backdrop {
     position: fixed; inset: 0; z-index: 600;
@@ -187,14 +191,14 @@ html, body { height: 100%; font-family: var(--font-main); font-size: 15px; color
   .sheet-action-btn:active { background: #EDF2F7; }
 
   /* 课本页内嵌媒体 → 浮动胶囊 */
+  .pdf-page-wrap { position: relative; }
   .page-media-bar {
     position: absolute; bottom: 8px; left: 8px; right: 8px;
-    background: rgba(255,255,255,0.88); backdrop-filter: blur(6px);
-    border-radius: 12px; padding: 6px 10px; gap: 4px;
-    margin-bottom: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background: rgba(255,255,255,0.85); backdrop-filter: blur(10px);
+    border-radius: 14px; padding: 6px 10px; gap: 4px;
+    margin-bottom: 0; box-shadow: 0 2px 12px rgba(0,0,0,0.12);
     z-index: 10;
   }
-  .pdf-page-wrap { position: relative; }
 
   /* 课本工具栏 */
   .pdf-toolbar { padding: 3px 6px; gap: 4px; }
