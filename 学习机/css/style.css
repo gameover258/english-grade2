@@ -91,12 +91,14 @@ html, body { height: 100%; font-family: var(--font-main); font-size: 15px; color
 
   /* 顶栏 */
   #topbar {
-    padding: 0 10px; justify-content: center; gap: 6px;
+    position: absolute; top: 0; left: 0; right: 0; z-index: 200;
+    padding: 0 10px; justify-content: center; gap: 6px; height: 32px;
+    background: rgba(56,142,60,0.85); backdrop-filter: blur(8px);
     transition: transform 0.3s ease;
   }
   #topbar.hidden { transform: translateY(-100%); }
   #topbar .logo { font-size: 20px; }
-  #topbar h1 { font-size: 13px; }
+  #topbar h1 { font-size: 12px; color: #fff; }
   #topbar #clock { display: none; }
 
   /* 侧边栏在移动端隐藏（改用浮动底栏+底部面板） */
@@ -207,8 +209,8 @@ html, body { height: 100%; font-family: var(--font-main); font-size: 15px; color
 
   /* 页码小格 */
   .pdf-page-mini { display: none; }
-  .pdf-page-img-wrap { padding: 2px; }
-  .pdf-page-img-wrap img { border-radius: 2px; }
+  .pdf-page-img-wrap { padding: 0; }
+  .pdf-page-img-wrap img { border-radius: 0; }
 
   /* 媒体条内元素 */
   .pmb-track { padding: 4px 6px; gap: 4px; border-radius: 8px; }

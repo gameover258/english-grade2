@@ -17,15 +17,15 @@
 .pdf-toolbar .zoom-btn.active { background: var(--primary); color: #fff; }
 
 .pdf-page-wrap {
-  flex: 1; display: flex; flex-direction: column; align-items: center; overflow: auto;
+  flex: 1; display: flex; flex-direction: column; align-items: center; overflow: hidden; width: 100%; height: 100%;
 }
 .pdf-page-img-wrap {
   flex: 1; display: flex; align-items: center; justify-content: center;
-  padding: 12px 12px 0 12px; width: 100%; min-height: 0;
+  padding: 0; width: 100%; min-height: 0;
 }
 .pdf-page-img-wrap img {
   border-radius: 6px 6px 0 0; box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
-  transition: transform 0.2s; max-width: 100%; max-height: 100%; object-fit: contain;
+  transition: transform 0.2s; width: 100%; height: 100%; object-fit: contain;
 }
 
 /* 页码小格导航 */
@@ -352,6 +352,6 @@
 .im-item.im-video:hover { background: rgba(100,100,255,0.35); }
 
 @media (max-width: 768px) {
-  .audio-indicator { top: 48px; font-size: 12px; padding: 6px 14px; }
-  .indicator-menu { top: 82px; }
+  .audio-indicator { top: 38px; font-size: 12px; padding: 6px 14px; }
+  .indicator-menu { top: 72px; }
 }
