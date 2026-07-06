@@ -89,9 +89,7 @@
     // 停止闪卡独立音频
     if (window.stopFlashcardAudio) window.stopFlashcardAudio();
     // 停止全局课本播放器
-    if (window.__globalAudio) { window.__globalAudio.pause(); }
-    // 同步 UI
-    if (window._syncPageMediaUI) window._syncPageMediaUI();
+    if (window.stopAllAudio) window.stopAllAudio();
   }
 
   function hideOverlay(id) { document.getElementById(id).className = 'overlay-hidden'; }

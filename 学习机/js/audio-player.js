@@ -1,6 +1,6 @@
 /**
- * 学习机 v2 — 全局音频播放器
- * 单一音频实例，迷你播放栏 UI 更新
+ * 学习机 v2 — 音频播放器
+ * 页面进入自动依次播放，点击屏幕暂停/继续
  */
 
 (function() {
@@ -8,10 +8,18 @@
 
   window.__globalAudio = null;
   window.__currentTrack = null;
+  window.__pageAudioQueue = [];
+  window.__queueIndex = 0;
+
+  function fmt(s) {
+    if (!s || !isFinite(s)) return '0:00';
+    var m = Math.floor(s / 60);
+    var sec = Math.floor(s % 60);
+    return m + ':' + String(sec).padStart(2, '0');
+  }
 
   function createAudio(file) {
-    const a = new Audio(PATHS.audio + file);
-    // .MP3 fallback
+    var a = new Audio(PATHS.audio + file);
     a.addEventListener('error', function h() {
       a.removeEventListener('error', h);
       if (file.endsWith('.mp3')) {
@@ -22,122 +30,130 @@
     return a;
   }
 
-  /** 全局播放 */
-  window.globalPlay = function(track) {
-    // 如果同一轨正在播放 → 暂停
-    if (window.__currentTrack && window.__currentTrack.file === track.file && window.__globalAudio && !window.__globalAudio.paused) {
-      window.__globalAudio.pause();
-      updateAllPlayBtns('▶️');
-      if (window._syncPageMediaUI) window._syncPageMediaUI();
-      return;
-    }
+  /** 设置当前页面的音频播放队列 */
+  window.setPageAudioQueue = function(tracks) {
+    window.__pageAudioQueue = tracks || [];
+    window.__queueIndex = 0;
+  };
 
-    // 如果同一轨已暂停 → 恢复
-    if (window.__currentTrack && window.__currentTrack.file === track.file && window.__globalAudio && window.__globalAudio.paused) {
-      window.__globalAudio.play().catch(() => {});
-      updateAllPlayBtns('⏸');
-      return;
-    }
-
-    // 停止旧的
+  /** 播放指定 track */
+  function playTrack(track) {
     if (window.__globalAudio) {
       window.__globalAudio.pause();
       window.__globalAudio = null;
     }
-
     window.__currentTrack = track;
-    const audio = createAudio(track.file);
+    var audio = createAudio(track.file);
     window.__globalAudio = audio;
 
-    // 同步所有迷你播放栏
-    function syncUI() {
-      // 同步页面内嵌媒体条
-      if (window._syncPageMediaUI) window._syncPageMediaUI();
-      
-      const bars = document.querySelectorAll('.media-mini-player');
-      bars.forEach(bar => {
-        const btn = bar.querySelector('.play-btn');
-        const rc = bar.querySelector('.progress-slider');
-        const tp = bar.querySelector('.time-text');
-
-        if (audio.duration && isFinite(audio.duration)) {
-          if (rc) rc.value = (audio.currentTime / audio.duration) * 100;
-          if (tp) tp.textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
-        }
-        if (btn) btn.textContent = audio.paused ? '▶️' : '⏸';
-      });
-    }
-
-    audio.addEventListener('timeupdate', syncUI);
-    audio.addEventListener('ended', () => {
-      updateAllPlayBtns('▶️');
-      syncUI();
-      // 尝试自动下一首
-      autoNext(track);
-    });
-    audio.addEventListener('loadedmetadata', syncUI);
-
-    audio.play().then(() => {
-      updateAllPlayBtns('⏸');
-      restoreSettings();
-      syncUI();
-      if (window._syncPageMediaUI) window._syncPageMediaUI();
-    }).catch(() => {
-      updateAllPlayBtns('▶️');
-      if (window._syncPageMediaUI) window._syncPageMediaUI();
-    });
-
-    // 高亮音频 chip
-    document.querySelectorAll('.media-audio-chip').forEach(c => {
-      const p = parseInt(c.dataset.page);
-      c.classList.toggle('playing', p === track.page);
-    });
-  };
-
-  function autoNext(track) {
-    // 如有叠加层打开（闪卡/词汇表/录音），不自动播放下一首
-    if (document.querySelector('.overlay-active')) return;
-    const app = window.__app;
-    if (!app) return;
-    const unitAudios = getUnitAudios(app.state.currentUnit);
-    const idx = unitAudios.findIndex(a => a.file === track.file);
-    if (idx >= 0 && idx < unitAudios.length - 1) {
-      const next = unitAudios[idx + 1];
-      window.globalPlay(next);
-    }
-  }
-
-  function restoreSettings() {
-    const bars = document.querySelectorAll('.media-mini-player');
-    bars.forEach(bar => {
-      const speedBtns = bar.querySelectorAll('.speed-btn');
-      speedBtns.forEach(b => {
-        if (b.classList.contains('active') && window.__globalAudio) {
-          window.__globalAudio.playbackRate = parseFloat(b.dataset.sp);
-        }
-      });
-      const vol = bar.querySelector('.vol-slider');
-      if (vol && window.__globalAudio) {
-        window.__globalAudio.volume = parseFloat(vol.value) / 100;
+    audio.addEventListener('timeupdate', updateIndicator);
+    audio.addEventListener('ended', function() {
+      updateIndicator();
+      // 自动播放下一个
+      var next = getNextInQueue(track);
+      if (next) {
+        window.__queueIndex++;
+        playTrack(next);
+      } else {
+        window.__currentTrack = null;
+        updateIndicator();
       }
     });
-  }
+    audio.addEventListener('loadedmetadata', updateIndicator);
 
-  function updateAllPlayBtns(icon) {
-    document.querySelectorAll('.media-mini-player .play-btn').forEach(b => {
-      b.textContent = icon;
+    audio.play().then(function() {
+      updateIndicator();
+      audio.volume = 1;
+    }).catch(function() {
+      updateIndicator();
     });
   }
 
-  function fmt(s) {
-    if (!s || !isFinite(s)) return '00:00';
-    const m = Math.floor(s / 60);
-    const sec = Math.floor(s % 60);
-    return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+  function getNextInQueue(track) {
+    var q = window.__pageAudioQueue;
+    if (!q || q.length === 0) return null;
+    var idx = window.__queueIndex + 1;
+    if (idx >= q.length) {
+      // 循环：回到第一个
+      window.__queueIndex = 0;
+      return q[0];
+    }
+    return q[idx];
   }
 
-  window.addEventListener('beforeunload', () => {
-    if (window.__globalAudio) window.__globalAudio.pause();
+  /** 全局播放（兼容旧接口） */
+  window.globalPlay = function(track) {
+    // 同一轨 → 切换暂停/播放
+    if (window.__currentTrack && window.__currentTrack.file === track.file) {
+      if (window.__globalAudio && !window.__globalAudio.paused) {
+        window.__globalAudio.pause();
+        updateIndicator();
+        return;
+      }
+      if (window.__globalAudio && window.__globalAudio.paused) {
+        window.__globalAudio.play().catch(function() {});
+        updateIndicator();
+        return;
+      }
+    }
+    playTrack(track);
+  };
+
+  /** 点击课本区域 → 暂停/继续 */
+  window.togglePlayPause = function() {
+    if (!window.__globalAudio) return;
+    if (window.__globalAudio.paused) {
+      window.__globalAudio.play().catch(function() {});
+    } else {
+      window.__globalAudio.pause();
+    }
+    updateIndicator();
+  };
+
+  /** 停止所有音频 */
+  window.stopAllAudio = function() {
+    if (window.__globalAudio) {
+      window.__globalAudio.pause();
+      window.__globalAudio = null;
+    }
+    window.__currentTrack = null;
+    window.__pageAudioQueue = [];
+    window.__queueIndex = 0;
+    updateIndicator();
+  };
+
+  /** 更新浮动指示器 */
+  function updateIndicator() {
+    var el = document.getElementById('audio-indicator');
+    if (!el) return;
+    var track = window.__currentTrack;
+    var audio = window.__globalAudio;
+
+    if (!track || !audio) {
+      el.style.display = 'none';
+      return;
+    }
+
+    el.style.display = 'flex';
+    var dur = audio.duration || 0;
+    var remaining = dur - (audio.currentTime || 0);
+
+    if (audio.paused) {
+      el.innerHTML = '<span style="font-size:14px;">⏸</span> <span style="font-weight:600;">' + track.label + '</span> <span style="opacity:0.7;">暂停中</span>';
+    } else if (dur && isFinite(dur)) {
+      el.innerHTML = '<span style="font-size:14px;">🎵</span> <span style="font-weight:600;">' + track.label + '</span> <span style="opacity:0.8;">' + fmt(remaining) + '</span>';
+    } else {
+      el.innerHTML = '<span style="font-size:14px;">🎵</span> <span style="font-weight:600;">' + track.label + '</span> <span style="opacity:0.7;">加载中…</span>';
+    }
+  }
+
+  // 点击课本区域暂停/继续
+  document.addEventListener('click', function(e) {
+    // 不拦截按钮、链接、叠加层内的点击
+    if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.overlay-active') || e.target.closest('#bottom-sheet') || e.target.closest('#mobile-bar')) return;
+    if (window.__globalAudio || window.__currentTrack) {
+      window.togglePlayPause();
+    }
   });
 
 })();
