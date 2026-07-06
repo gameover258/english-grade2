@@ -100,25 +100,12 @@
   }
 
   // ===== 页面内嵌播放条交互（事件委托） =====
+  // 视频点击事件委托（音频用 inline onclick）
   document.addEventListener('click', function(e) {
-    // 视频：点击 .pmb-video 或内部的 button
     var videoTrack = e.target.closest('.pmb-video');
     if (videoTrack && videoTrack.dataset.file) {
       if (typeof window.openVideoOverlay === 'function') {
         window.openVideoOverlay(videoTrack);
-      }
-      return;
-    }
-    // 音频播放按钮
-    var playBtn = e.target.closest('.pmb-track .pmb-play');
-    if (playBtn && !playBtn.closest('.pmb-video')) {
-      var track = playBtn.closest('.pmb-track');
-      if (track && track.dataset.file) {
-        globalPlay({
-          file: track.dataset.file,
-          page: parseInt(track.dataset.page),
-          label: track.dataset.label
-        });
       }
     }
   });
