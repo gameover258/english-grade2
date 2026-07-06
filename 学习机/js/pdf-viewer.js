@@ -77,19 +77,18 @@
     var mediaEl = document.getElementById('media-panel');
     if (mediaEl) mediaEl.innerHTML = '';
 
-    // 页面音频：设置队列并自动播放
+    // 切换页面：停止旧的，播放新页面的第一个音频
     if (pageAudios.length > 0) {
-      setPageAudioQueue(pageAudios);
-      if (!window.__currentTrack || (window.__globalAudio && window.__globalAudio.paused)) {
-        var first = pageAudios[0];
-        if (window.__currentTrack && window.__currentTrack.file !== first.file) {
-          window.__queueIndex = 0;
-          window.globalPlay(first);
-        } else if (!window.__currentTrack) {
-          window.__queueIndex = 0;
-          window.globalPlay(first);
-        }
+      var first = pageAudios[0];
+      var needSwitch = !window.__currentTrack || window.__currentTrack.page !== cur;
+      if (needSwitch) {
+        setPageAudioQueue(pageAudios);
+        window.__queueIndex = 0;
+        window.globalPlay(first);
       }
+    } else {
+      // 当前页没有音频 → 停止
+      if (window.stopAllAudio) window.stopAllAudio();
     }
   };
 
