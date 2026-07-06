@@ -179,6 +179,85 @@
     fetch('data/words.json').then(function(r) { return r.json(); }).then(function(d) { window.WORDS_BY_UNIT = d; }).catch(function() {});
   }
 
+  // ===== 移动端浮动底栏 =====
+  function isMobile() { return window.innerWidth <= 768; }
+
+  function updateMobileBar() {
+    if (!isMobile()) return;
+    var bar = document.getElementById('mobile-bar');
+    if (bar) bar.style.display = 'flex';
+    var ul = document.getElementById('mobile-unit-label');
+    var pl = document.getElementById('mobile-page-label');
+    if (ul) ul.textContent = state.currentUnit.name;
+    if (pl) pl.textContent = 'P' + (state.currentPage - TEXTBOOK_OFFSET);
+  }
+
+  function renderSheetUnits() {
+    var el = document.getElementById('sheet-unit-list');
+    var acts = document.getElementById('sheet-actions');
+    if (!el) return;
+    var html = '';
+    for (var i = 0; i < UNITS.length; i++) {
+      var u = UNITS[i];
+      html += '<button class="sheet-unit-item" data-id="' + u.id + '">'
+        + '<span class="dot" style="background:' + u.color + '"></span>'
+        + '<span class="name">' + u.name + '</span>'
+        + '<span class="range">' + u.title + '</span></button>';
+    }
+    el.innerHTML = html;
+    el.onclick = function(e) {
+      var btn = e.target.closest('.sheet-unit-item');
+      if (!btn) return;
+      var u = UNITS.find(function(x) { return x.id === btn.dataset.id; });
+      if (u) { state.currentUnit = u; state.currentPage = u.pdfStart; renderAll(); hideBottomSheet(); }
+    };
+    acts.innerHTML = '<button class="sheet-action-btn" id="sheet-btn-fc">📝 单词闪卡</button>'
+      + '<button class="sheet-action-btn" id="sheet-btn-rec">🎤 跟读录音</button>'
+      + '<button class="sheet-action-btn" id="sheet-btn-voc">📚 词汇表</button>';
+    document.getElementById('sheet-btn-fc').onclick = function() { hideBottomSheet(); showOverlay('flashcard-overlay', renderFlashcards); };
+    document.getElementById('sheet-btn-rec').onclick = function() { hideBottomSheet(); showOverlay('recorder-overlay', renderRecorder); };
+    document.getElementById('sheet-btn-voc').onclick = function() { hideBottomSheet(); showOverlay('vocab-overlay', renderVocab); };
+  }
+
+  window.showBottomSheet = function() {
+    document.getElementById('bottom-sheet').className = 'open';
+    renderSheetUnits();
+  };
+  window.hideBottomSheet = function() {
+    document.getElementById('bottom-sheet').className = '';
+  };
+
+  // 浮动底栏自动隐藏
+  var hideTimer = null;
+  function resetHideTimer() {
+    if (!isMobile()) return;
+    var bar = document.getElementById('mobile-bar');
+    if (!bar) return;
+    bar.classList.remove('fading');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(function() { bar.classList.add('fading'); }, 4000);
+  }
+
+  document.addEventListener('touchstart', resetHideTimer);
+  document.addEventListener('click', resetHideTimer);
+
+  // 更新底栏
+  var origRenderAll = renderAll;
+  renderAll = function() {
+    origRenderAll();
+    updateMobileBar();
+    resetHideTimer();
+  };
+
+  // 初始化移动端
+  if (isMobile()) {
+    document.getElementById('mobile-bar').style.display = 'flex';
+    document.getElementById('mobile-unit-btn').onclick = function() { showBottomSheet(); };
+    document.getElementById('mobile-menu-btn').onclick = function() { showBottomSheet(); };
+    updateMobileBar();
+    resetHideTimer();
+  }
+
   window.__app = { state: state, renderAll: renderAll, renderUnits: renderUnits };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

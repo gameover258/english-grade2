@@ -92,83 +92,131 @@ html, body { height: 100%; font-family: var(--font-main); font-size: 15px; color
   /* 顶栏 */
   #topbar {
     padding: 0 10px; justify-content: center; gap: 6px;
+    transition: transform 0.3s ease;
   }
+  #topbar.hidden { transform: translateY(-100%); }
   #topbar .logo { font-size: 20px; }
   #topbar h1 { font-size: 13px; }
   #topbar #clock { display: none; }
 
-  /* 底栏：双行布局 */
-  #main-layout { flex-direction: column-reverse; }
+  /* 侧边栏在移动端隐藏（改用浮动底栏+底部面板） */
+  #sidebar { display: none; }
 
-  #sidebar {
-    width: 100%; min-width: 100%; max-height: none;
-    flex-direction: column;
-    padding: 6px 8px;
-    border-right: none; border-top: 1px solid #E8E0D5;
-    overflow: hidden; flex-shrink: 0;
-    background: var(--surface);
-    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
-    gap: 6px;
-  }
-  .sidebar-section { display: none; }
-  .sidebar-divider { display: none; }
+  /* 内容区全屏 */
+  #main-layout { height: 100vh; }
+  #content { height: 100%; }
+  #textbook-view { height: 100%; }
+  #pdf-container { height: 100%; }
 
-  /* 上行：单元胶囊 */
-  #unit-list {
-    display: flex; flex-direction: row; gap: 4px; padding: 0;
-    overflow-x: auto; -webkit-overflow-scrolling: touch;
+  /* 浮动底栏（桌面端隐藏） */
+  #mobile-bar {
+    display: flex !important;
+    position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+    z-index: 500; gap: 6px; align-items: center;
+    background: rgba(30,30,30,0.85); backdrop-filter: blur(12px);
+    border-radius: 22px; padding: 4px 6px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    transition: opacity 0.3s ease, transform 0.3s ease;
   }
-  #unit-list::-webkit-scrollbar { display: none; }
-  #unit-list li {
-    padding: 6px 12px; margin: 0; font-size: 13px; font-weight: 600;
-    white-space: nowrap; border-radius: 16px; gap: 5px; flex-shrink: 0;
-  }
-  #unit-list li .dot { width: 7px; height: 7px; }
-  #unit-list li .range { display: none; }
+  #mobile-bar.fading { opacity: 0.3; transform: translateX(-50%) translateY(4px); }
 
-  /* 下行：功能按钮 */
-  .sidebar-actions {
-    display: flex; flex-direction: row; gap: 6px;
+  .mobile-unit-btn {
+    display: flex; align-items: center; gap: 4px;
+    padding: 7px 14px; border: none; border-radius: 18px;
+    background: rgba(255,255,255,0.12); color: #fff;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: var(--font-main); white-space: nowrap;
   }
-  .sidebar-btn {
-    margin: 0; padding: 7px 12px; font-size: 12px; font-weight: 600;
-    width: auto; white-space: nowrap; border-radius: 14px; flex: 1;
-    text-align: center; min-width: 0;
+  .mobile-unit-btn:active { background: rgba(255,255,255,0.25); }
+
+  .mobile-menu-btn {
+    width: 34px; height: 34px; border: none; border-radius: 50%;
+    background: var(--primary); color: #fff; font-size: 16px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
   }
 
-  /* 内容区 */
-  #content { flex: 1; min-height: 0; }
-  #textbook-view { flex: 1; min-height: 0; }
-  #pdf-container { flex: 1; min-height: 0; }
+  /* 底部弹出面板 */
+  #bottom-sheet { display: none; }
+  #bottom-sheet.open { display: block; }
 
-  /* 工具栏 */
+  .sheet-backdrop {
+    position: fixed; inset: 0; z-index: 600;
+    background: rgba(0,0,0,0.4);
+  }
+  .sheet-panel {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 601;
+    background: var(--surface); border-radius: 18px 18px 0 0;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) 16px;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+    max-height: 65vh; overflow-y: auto;
+    animation: sheetUp 0.25s ease;
+  }
+  @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+  .sheet-handle {
+    width: 36px; height: 4px; background: #D1D5DB;
+    border-radius: 2px; margin: 0 auto 12px auto;
+  }
+
+  /* 面板内单元列表 */
+  #sheet-unit-list {
+    display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px;
+  }
+  .sheet-unit-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; border-radius: 12px; cursor: pointer;
+    font-size: 15px; font-weight: 600; border: none; background: #F7FAFC;
+    font-family: var(--font-main); text-align: left; width: 100%;
+  }
+  .sheet-unit-item:active { background: #EDF2F7; }
+  .sheet-unit-item .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .sheet-unit-item .name { flex: 1; }
+  .sheet-unit-item .range { font-size: 12px; color: var(--text-light); font-weight: 400; }
+
+  /* 面板内功能按钮 */
+  #sheet-actions {
+    display: flex; gap: 8px; padding-top: 8px;
+    border-top: 1px solid #EDF2F7;
+  }
+  .sheet-action-btn {
+    flex: 1; padding: 10px; border-radius: 12px; border: none;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: var(--font-main); text-align: center;
+    background: #F7FAFC;
+  }
+  .sheet-action-btn:active { background: #EDF2F7; }
+
+  /* 课本页内嵌媒体 → 浮动胶囊 */
+  .page-media-bar {
+    position: absolute; bottom: 8px; left: 8px; right: 8px;
+    background: rgba(255,255,255,0.88); backdrop-filter: blur(6px);
+    border-radius: 12px; padding: 6px 10px; gap: 4px;
+    margin-bottom: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 10;
+  }
+  .pdf-page-wrap { position: relative; }
+
+  /* 课本工具栏 */
   .pdf-toolbar { padding: 3px 6px; gap: 4px; }
   .pdf-toolbar button { width: 28px; height: 28px; font-size: 12px; }
   .pdf-toolbar .page-info { font-size: 11px; min-width: 60px; }
-  .pdf-toolbar .zoom-group { margin-left: 0; }
-  .pdf-toolbar .zoom-btn { font-size: 9px; padding: 0 5px; }
 
-  /* 页面图片 */
-  .pdf-page-img-wrap { padding: 2px 2px 0 2px; }
-  .pdf-page-img-wrap img { border-radius: 3px 3px 0 0; }
+  /* 页码小格 */
+  .pdf-page-mini { display: none; }
+  .pdf-page-img-wrap { padding: 2px; }
+  .pdf-page-img-wrap img { border-radius: 2px; }
 
-  /* 媒体条 */
-  .page-media-bar { padding: 4px 6px 6px 6px; gap: 2px; border-radius: 0 0 3px 3px; margin-bottom: 1px; }
-  .pmb-track { padding: 4px 6px; gap: 4px; border-radius: 6px; }
-  .pmb-play { width: 32px; height: 32px; font-size: 14px; }
-  .pmb-label { font-size: 10px; min-width: 45px; }
-  .pmb-time { font-size: 9px; min-width: 60px; }
-  .pmb-progress { min-width: 30px; height: 5px; }
+  /* 媒体条内元素 */
+  .pmb-track { padding: 4px 6px; gap: 4px; border-radius: 8px; }
+  .pmb-play { width: 30px; height: 30px; font-size: 13px; }
+  .pmb-label { font-size: 10px; min-width: 40px; }
+  .pmb-time { font-size: 9px; min-width: 55px; }
+  .pmb-progress { min-width: 30px; height: 4px; }
   .pmb-progress::-webkit-slider-thumb { width: 16px; height: 16px; }
-
-  /* 页码 */
-  .pdf-page-mini { padding: 2px 4px; gap: 0; }
-  .pdf-page-mini button { width: 22px; height: 20px; font-size: 9px; }
 
   /* 叠加层 */
   #flashcard-content, #recorder-content, #vocab-content {
     width: 100%; max-width: 100%; border-radius: 0; padding: 16px;
-    max-height: 100vh; overflow-y: auto;
   }
   .overlay-close { top: 8px; right: 10px; font-size: 14px; padding: 6px 12px; }
 
@@ -176,14 +224,10 @@ html, body { height: 100%; font-family: var(--font-main); font-size: 15px; color
   .fc-scene { width: 240px; height: 160px; }
   .fc-front .word-en { font-size: 26px; }
   .fc-back .word-cn { font-size: 20px; }
-  .fc-actions { gap: 4px; }
-  .fc-actions button { padding: 5px 10px; font-size: 11px; }
 
   /* 词汇表 */
-  .vocab-unit h3 { font-size: 13px; padding: 4px 8px; }
+  .vocab-unit h3 { font-size: 13px; }
   .vocab-table { font-size: 12px; }
-  .vocab-table th, .vocab-table td { padding: 3px 5px; }
-  .vocab-table .vocab-en { font-size: 12px; }
   .vocab-unit-play { width: 28px; height: 28px; font-size: 14px; }
 
   /* 录音 */

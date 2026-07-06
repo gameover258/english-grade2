@@ -43,7 +43,23 @@
       </main>
     </div>
 
-    <!-- ===== 视频侧弹窗 ===== -->
+        <!-- ===== 移动端浮动底栏 ===== -->
+    <div id="mobile-bar" style="display:none">
+      <button id="mobile-unit-btn" class="mobile-unit-btn">● <span id="mobile-unit-label">Unit 1</span> · <span id="mobile-page-label">P5</span></button>
+      <button id="mobile-menu-btn" class="mobile-menu-btn">☰</button>
+    </div>
+
+    <!-- ===== 移动端底部弹出面板 ===== -->
+    <div id="bottom-sheet" style="display:none">
+      <div class="sheet-backdrop" onclick="hideBottomSheet()"></div>
+      <div class="sheet-panel">
+        <div class="sheet-handle"></div>
+        <div id="sheet-unit-list"></div>
+        <div id="sheet-actions"></div>
+      </div>
+    </div>
+
+<!-- ===== 视频侧弹窗 ===== -->
     <div id="video-overlay" class="overlay-hidden">
       <div id="video-overlay-bg"></div>
       <div id="video-overlay-box">
