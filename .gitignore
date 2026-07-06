@@ -1,0 +1,19 @@
+# 源 PDF（学习机不直接使用，省 9.8MB）
+电子课本/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# macOS
+__MACOSX/
+._*
+
+# 启动脚本（仅本地使用）
+学习机/start.command
+
+# 临时文件
+*.log
+/tmp/
