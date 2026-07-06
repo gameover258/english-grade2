@@ -50,18 +50,31 @@
   });
 
   // 移动端左右滑动翻页
-  var touchStartX = 0, touchStartY = 0;
+  var swipeStartX = 0, swipeStartY = 0, swiping = false;
+
   document.addEventListener('touchstart', function(e) {
     if (document.querySelector('.overlay-active')) return;
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
+    if (!e.touches || !e.touches[0]) return;
+    swipeStartX = e.touches[0].clientX;
+    swipeStartY = e.touches[0].clientY;
+    swiping = true;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function(e) {
+    if (!swiping) return;
+    if (document.querySelector('.overlay-active')) { swiping = false; return; }
   }, { passive: true });
 
   document.addEventListener('touchend', function(e) {
+    if (!swiping) return;
+    swiping = false;
     if (document.querySelector('.overlay-active')) return;
-    var dx = (e.changedTouches[0] || {}).clientX - touchStartX || 0;
-    var dy = (e.changedTouches[0] || {}).clientY - touchStartY || 0;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+    var touch = e.changedTouches && e.changedTouches[0];
+    if (!touch) return;
+    var dx = touch.clientX - swipeStartX;
+    var dy = touch.clientY - swipeStartY;
+    // 水平为主且滑动距离 > 30px
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30) {
       if (dx < 0) nextPage();
       else prevPage();
     }
