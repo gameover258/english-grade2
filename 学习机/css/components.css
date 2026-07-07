@@ -139,8 +139,8 @@
 }
 #video-overlay-player { max-width: 100%; max-height: 100%; border-radius: 6px; }
 
-/* 闪卡 + 录音 + 词汇表叠加层内容 */
-#flashcard-content, #vocab-content {
+/* 词汇表叠加层内容 */
+#vocab-content {
   background: var(--bg); border-radius: var(--radius); padding: 24px;
   max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto;
   box-shadow: var(--shadow-lg); z-index: 201; position: relative;
@@ -163,37 +163,6 @@
 .vocab-table .vocab-en { font-family: var(--font-en); font-weight: 600; font-size: 15px; }
 .vocab-table .vocab-sound-btn { background: none; border: none; font-size: 16px; cursor: pointer; padding: 4px 6px; border-radius: 4px; }
 .vocab-table .vocab-sound-btn:hover { background: #E3F2FD; }
-
-/* ===== 闪卡样式（内嵌在叠加层中） ===== */
-.fc-container { display: flex; flex-direction: column; align-items: center; padding: 10px 0; }
-.fc-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; justify-content: center; }
-.fc-controls select, .fc-controls .filter-btn {
-  padding: 6px 14px; border-radius: var(--radius-sm); border: 1px solid #E2E8F0;
-  background: var(--surface); font-size: 13px; font-family: var(--font-main); cursor: pointer;
-}
-.fc-controls .filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-.fc-scene { width: 300px; height: 200px; perspective: 800px; cursor: pointer; margin: 10px 0; }
-.fc-card { position: relative; width: 100%; height: 100%; transition: transform 0.5s ease; transform-style: preserve-3d; }
-.fc-card.flipped { transform: rotateY(180deg); }
-.fc-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: var(--shadow-lg); }
-.fc-front { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
-.fc-front .word-en { font-family: var(--font-en); font-size: 34px; font-weight: 700; margin-bottom: 6px; }
-.fc-front .word-emoji { font-size: 44px; }
-.fc-back { background: var(--surface); color: var(--text); transform: rotateY(180deg); }
-.fc-back .word-cn { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
-.fc-back .word-en-small { font-size: 16px; color: var(--text-light); font-family: var(--font-en); }
-
-.fc-nav { display: flex; align-items: center; gap: 16px; margin-top: 12px; }
-.fc-nav button { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--surface); color: var(--text); font-size: 16px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: all 0.15s; }
-.fc-nav button:hover { background: var(--primary); color: #fff; }
-.fc-nav .counter { font-size: 13px; color: var(--text-light); font-weight: 500; }
-.fc-actions { display: flex; gap: 6px; margin-top: 10px; }
-.fc-actions button { padding: 6px 14px; border-radius: var(--radius-sm); border: none; font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--font-main); }
-.fc-actions .btn-sound { background: #E3F2FD; color: #1565C0; }
-.fc-actions .btn-auto { background: #FFF3E0; color: #E65100; }
-.fc-actions .btn-auto.active { background: #E65100; color: #fff; }
-
 /* ===== 页面内嵌媒体条 ===== */
 .page-media-bar {
   width: 100%;

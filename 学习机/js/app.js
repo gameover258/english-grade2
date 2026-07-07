@@ -87,7 +87,6 @@
       __vocabActiveUnit = null;
       updateAllVocabBtns();
     } catch(e) {}
-    try { if (window.stopFlashcardAudio) window.stopFlashcardAudio(); } catch(e) {}
     try { if (window.stopAllAudio) window.stopAllAudio(); } catch(e) {}
   }
 
@@ -98,10 +97,8 @@
   function init() {
     renderUnits();
 
-    document.getElementById('btn-flashcards').onclick = function() { showOverlay('flashcard-overlay', renderFlashcards); };
     document.getElementById('btn-vocab').onclick = function() { showOverlay('vocab-overlay', renderVocab); };
 
-    document.getElementById('flashcard-close').onclick = function() { hideOverlay('flashcard-overlay'); try { stopAllAudio(); } catch(e) {} };
     document.getElementById('vocab-close').onclick = function() { hideOverlay('vocab-overlay'); try { stopAllAudio(); } catch(e) {} };
 
     document.getElementById('video-close').onclick = hideVideoOverlay;
@@ -237,9 +234,7 @@
       var u = UNITS.find(function(x) { return x.id === btn.dataset.id; });
       if (u) { state.currentUnit = u; state.currentPage = u.pdfStart; renderAll(); hideBottomSheet(); }
     };
-    acts.innerHTML = '<button class="sheet-action-btn" id="sheet-btn-fc">📝 单词闪卡</button>'
-      + '<button class="sheet-action-btn" id="sheet-btn-voc">📚 词汇表</button>';
-    document.getElementById('sheet-btn-fc').onclick = function() { hideBottomSheet(); showOverlay('flashcard-overlay', renderFlashcards); };
+    acts.innerHTML = '<button class="sheet-action-btn" id="sheet-btn-voc">📚 词汇表</button>';
     document.getElementById('sheet-btn-voc').onclick = function() { hideBottomSheet(); showOverlay('vocab-overlay', renderVocab); };
   }
 

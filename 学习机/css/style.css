@@ -221,15 +221,10 @@ html, body { height: 100%; font-family: var(--font-main); font-size: 15px; color
   .pmb-progress::-webkit-slider-thumb { width: 16px; height: 16px; }
 
   /* 叠加层 */
-  #flashcard-content, #vocab-content {
+  #vocab-content {
     width: 100%; max-width: 100%; border-radius: 0; padding: 16px;
   }
   .overlay-close { top: 8px; right: 10px; font-size: 14px; padding: 6px 12px; }
-
-  /* 闪卡 */
-  .fc-scene { width: 240px; height: 160px; }
-  .fc-front .word-en { font-size: 26px; }
-  .fc-back .word-cn { font-size: 20px; }
 
   /* 词汇表 */
   .vocab-unit h3 { font-size: 13px; }

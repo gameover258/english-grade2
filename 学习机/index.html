@@ -26,7 +26,6 @@
         </div>
         <div class="sidebar-divider"></div>
         <div class="sidebar-actions">
-          <button class="sidebar-btn" id="btn-flashcards">📝 单词闪卡</button>
           <button class="sidebar-btn" id="btn-vocab">📚 词汇表</button>
         </div>
       </nav>
@@ -75,12 +74,6 @@
       </div>
     </div>
 
-    <!-- ===== 单词闪卡叠加层 ===== -->
-    <div id="flashcard-overlay" class="overlay-hidden">
-      <button id="flashcard-close" class="overlay-close" onclick="this.parentElement.className='overlay-hidden';try{stopAllAudio()}catch(e){}">✕ 返回课本</button>
-      <div id="flashcard-content"></div>
-    </div>
-
     <!-- ===== 词汇表叠加层 ===== -->
     <div id="vocab-overlay" class="overlay-hidden">
       <button id="vocab-close" class="overlay-close" onclick="this.parentElement.className='overlay-hidden';try{stopAllAudio()}catch(e){}">✕ 返回课本</button>
@@ -92,7 +85,6 @@
   <script src="js/audio-player.js"></script>
   <script src="js/pdf-viewer.js"></script>
   <script src="js/video-player.js"></script>
-  <script src="js/flashcards.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
