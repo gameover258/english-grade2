@@ -111,11 +111,23 @@
   window.renderVocab = function() {
     var el = document.getElementById('vocab-content');
     if (!el) return;
+
+    // 数据未加载 → 显示加载中，等待后重新渲染
+    if (Object.keys(window.WORDS_BY_UNIT || {}).length === 0) {
+      el.innerHTML = '<div style="text-align:center;padding:60px 20px;"><div style="font-size:36px;">⏳</div><p style="margin-top:12px;color:var(--text-light);">加载词汇数据…</p></div>';
+      ensureWords().then(function() { window.renderVocab(); }).catch(function() {
+        el.innerHTML = '<div style="text-align:center;padding:60px 20px;"><div style="font-size:36px;">❌</div><p style="margin-top:12px;color:var(--text-light);">加载失败，请刷新重试</p></div>';
+      });
+      return;
+    }
+
     var html = '<h2 style="margin-bottom:14px;">📚 词汇表</h2>';
+    var hasAny = false;
     for (var vi = 0; vi < UNITS.length; vi++) {
       var u = UNITS[vi];
       var words = (window.WORDS_BY_UNIT && window.WORDS_BY_UNIT[u.id]) ? window.WORDS_BY_UNIT[u.id] : [];
       if (words.length === 0) continue;
+      hasAny = true;
       var audioFile = words[0].audio;
       html += '<div class="vocab-unit">'
         + '<h3 style="background:' + u.color + '20;color:' + u.color + ';display:flex;align-items:center;gap:8px;">'
@@ -129,6 +141,9 @@
         html += '<tr><td class="vocab-en">' + w.emoji + ' ' + w.en + '</td><td>' + w.cn + '</td></tr>';
       }
       html += '</tbody></table></div>';
+    }
+    if (!hasAny) {
+      html += '<p style="text-align:center;color:var(--text-light);padding:40px;">暂无词汇数据</p>';
     }
     el.innerHTML = html;
   };
@@ -197,10 +212,22 @@
     window.toggleVocabUnitAudio({ getAttribute: function(k) { return k === 'data-audio' ? audioFile : 'legacy'; } });
   };
 
-  // 预加载词表
-  if (Object.keys(window.WORDS_BY_UNIT || {}).length === 0) {
-    fetch('data/words.json').then(function(r) { return r.json(); }).then(function(d) { window.WORDS_BY_UNIT = d; }).catch(function() {});
+  // 预加载词表（返回 Promise 供 renderVocab 等待）
+  window.WORDS_BY_UNIT = {};
+  var _wordsPromise = null;
+  function ensureWords() {
+    if (_wordsPromise) return _wordsPromise;
+    if (Object.keys(window.WORDS_BY_UNIT || {}).length > 0) {
+      _wordsPromise = Promise.resolve(window.WORDS_BY_UNIT);
+      return _wordsPromise;
+    }
+    _wordsPromise = fetch('data/words.json')
+      .then(function(r) { return r.json(); })
+      .then(function(d) { window.WORDS_BY_UNIT = d; return d; })
+      .catch(function(e) { _wordsPromise = null; throw e; });
+    return _wordsPromise;
   }
+  ensureWords();
 
   // ===== 移动端浮动底栏 =====
   function isMobile() { return window.innerWidth <= 768; }
