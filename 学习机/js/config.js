@@ -26,7 +26,7 @@ function videoFile(page, suffix) {
 
 const UNITS = [
   { id: 'unit1', name: 'Unit 1', title: 'Feelings & Food',
-    pdfStart: 7, pdfEnd: 12,      // 课本 P3-P8
+    pdfStart: 5, pdfEnd: 12,      // 课本 P1-P8
     color: '#4CAF50',
     audioPages: [3, 4, 5, 6, 8], audioParts: { 3: ['1', '2'], 6: ['1', '2'] },
     videos: [{ page: 'P3' }, { page: 'P4' }] },
