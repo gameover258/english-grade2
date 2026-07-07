@@ -100,11 +100,9 @@
     renderUnits();
 
     document.getElementById('btn-flashcards').onclick = function() { showOverlay('flashcard-overlay', renderFlashcards); };
-    document.getElementById('btn-recorder').onclick = function() { showOverlay('recorder-overlay', renderRecorder); };
     document.getElementById('btn-vocab').onclick = function() { showOverlay('vocab-overlay', renderVocab); };
 
     document.getElementById('flashcard-close').onclick = function() { stopAllAudio(); hideOverlay('flashcard-overlay'); };
-    document.getElementById('recorder-close').onclick = function() { stopAllAudio(); hideOverlay('recorder-overlay'); };
     document.getElementById('vocab-close').onclick = function() { stopAllAudio(); hideOverlay('vocab-overlay'); };
 
     document.getElementById('video-close').onclick = hideVideoOverlay;
@@ -241,10 +239,8 @@
       if (u) { state.currentUnit = u; state.currentPage = u.pdfStart; renderAll(); hideBottomSheet(); }
     };
     acts.innerHTML = '<button class="sheet-action-btn" id="sheet-btn-fc">📝 单词闪卡</button>'
-      + '<button class="sheet-action-btn" id="sheet-btn-rec">🎤 跟读录音</button>'
       + '<button class="sheet-action-btn" id="sheet-btn-voc">📚 词汇表</button>';
     document.getElementById('sheet-btn-fc').onclick = function() { hideBottomSheet(); showOverlay('flashcard-overlay', renderFlashcards); };
-    document.getElementById('sheet-btn-rec').onclick = function() { hideBottomSheet(); showOverlay('recorder-overlay', renderRecorder); };
     document.getElementById('sheet-btn-voc').onclick = function() { hideBottomSheet(); showOverlay('vocab-overlay', renderVocab); };
   }
 

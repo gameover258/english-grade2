@@ -221,7 +221,7 @@ html, body { height: 100%; font-family: var(--font-main); font-size: 15px; color
   .pmb-progress::-webkit-slider-thumb { width: 16px; height: 16px; }
 
   /* 叠加层 */
-  #flashcard-content, #recorder-content, #vocab-content {
+  #flashcard-content, #vocab-content {
     width: 100%; max-width: 100%; border-radius: 0; padding: 16px;
   }
   .overlay-close { top: 8px; right: 10px; font-size: 14px; padding: 6px 12px; }
@@ -237,8 +237,6 @@ html, body { height: 100%; font-family: var(--font-main); font-size: 15px; color
   .vocab-unit-play { width: 28px; height: 28px; font-size: 14px; }
 
   /* 录音 */
-  .rec-btn { width: 44px; height: 44px; font-size: 18px; }
-  .rec-wave canvas { height: 60px; }
 }
 
 /* ===== 平板中等屏幕 ===== */

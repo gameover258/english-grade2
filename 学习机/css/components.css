@@ -140,7 +140,7 @@
 #video-overlay-player { max-width: 100%; max-height: 100%; border-radius: 6px; }
 
 /* 闪卡 + 录音 + 词汇表叠加层内容 */
-#flashcard-content, #recorder-content, #vocab-content {
+#flashcard-content, #vocab-content {
   background: var(--bg); border-radius: var(--radius); padding: 24px;
   max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto;
   box-shadow: var(--shadow-lg); z-index: 201; position: relative;
@@ -193,23 +193,6 @@
 .fc-actions .btn-sound { background: #E3F2FD; color: #1565C0; }
 .fc-actions .btn-auto { background: #FFF3E0; color: #E65100; }
 .fc-actions .btn-auto.active { background: #E65100; color: #fff; }
-
-/* ===== 录音样式 ===== */
-.rec-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 10px 0; }
-.rec-wrap h2 { font-size: 18px; }
-.rec-wrap .desc { color: var(--text-light); font-size: 13px; }
-.rec-source select { width: 100%; max-width: 480px; padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid #E2E8F0; font-size: 13px; }
-.rec-btns { display: flex; gap: 10px; }
-.rec-btn { width: 52px; height: 52px; border-radius: 50%; border: none; font-size: 22px; cursor: pointer; transition: all 0.15s; }
-.rec-btn.play-og { background: #E3F2FD; color: #1565C0; }
-.rec-btn.rec-start { background: #FFEBEE; color: #C62828; }
-.rec-btn.rec-start.recording { background: #C62828; color: #fff; animation: rec-pulse 1s infinite; }
-.rec-btn.rec-stop { background: #ECEFF1; color: #37474F; }
-@keyframes rec-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-.rec-countdown { font-size: 40px; font-weight: 700; color: var(--primary); }
-.rec-wave { width: 100%; max-width: 520px; background: var(--surface); border-radius: var(--radius); padding: 10px; }
-.rec-wave canvas { width: 100%; height: 90px; border-radius: 4px; }
-.rec-wave-label { font-size: 11px; color: var(--text-light); margin-bottom: 3px; }
 
 /* ===== 页面内嵌媒体条 ===== */
 .page-media-bar {
