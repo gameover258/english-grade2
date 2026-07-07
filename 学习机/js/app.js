@@ -261,8 +261,7 @@
       var u = UNITS.find(function(x) { return x.id === btn.dataset.id; });
       if (u) { state.currentUnit = u; state.currentPage = u.pdfStart; renderAll(); hideBottomSheet(); }
     };
-    acts.innerHTML = '<button class="sheet-action-btn" id="sheet-btn-voc">📚 词汇表</button>';
-    document.getElementById('sheet-btn-voc').onclick = function() { hideBottomSheet(); showOverlay('vocab-overlay', renderVocab); };
+    acts.innerHTML = '<button class="sheet-action-btn" id="sheet-btn-voc" onclick="hideBottomSheet();document.getElementById(\'vocab-overlay\').className=\'overlay-active\';renderVocab()">📚 词汇表</button>';
   }
 
   window.showBottomSheet = function() {
