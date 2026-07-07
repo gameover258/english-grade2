@@ -77,13 +77,13 @@
 
     <!-- ===== 单词闪卡叠加层 ===== -->
     <div id="flashcard-overlay" class="overlay-hidden">
-      <button id="flashcard-close" class="overlay-close">✕ 返回课本</button>
+      <button id="flashcard-close" class="overlay-close" onclick="this.parentElement.className='overlay-hidden';try{stopAllAudio()}catch(e){}">✕ 返回课本</button>
       <div id="flashcard-content"></div>
     </div>
 
     <!-- ===== 词汇表叠加层 ===== -->
     <div id="vocab-overlay" class="overlay-hidden">
-      <button id="vocab-close" class="overlay-close">✕ 返回课本</button>
+      <button id="vocab-close" class="overlay-close" onclick="this.parentElement.className='overlay-hidden';try{stopAllAudio()}catch(e){}">✕ 返回课本</button>
       <div id="vocab-content"></div>
     </div>
   </div>

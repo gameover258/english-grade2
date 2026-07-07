@@ -128,28 +128,57 @@
 
   window.fcAuto = function() { autoActive ? fcStopAuto() : fcStartAuto(); };
 
+  function fcNextAuto() {
+    var words = getFilteredWords();
+    if ((window._fcIdx || 0) < words.length - 1) {
+      window._fcIdx++;
+      window.renderFlashcards();
+      setTimeout(function() { fcPlayAudioAndFlip(); }, 600);
+    } else {
+      fcStopAuto();
+    }
+  }
+
+  function fcPlayAudioAndFlip() {
+    if (!autoActive) return;
+    var words = getFilteredWords();
+    var w = words[window._fcIdx || 0];
+    // 翻转卡片
+    var card = document.getElementById('fc-card');
+    if (card && !card.classList.contains('flipped')) {
+      card.classList.add('flipped');
+    }
+    // 播放音频，结束后自动下一页
+    if (w && w.audio) {
+      if (__fcAudio) { __fcAudio.pause(); __fcAudio = null; }
+      if (window.__globalAudio && !window.__globalAudio.paused) { window.__globalAudio.pause(); }
+      var url = PATHS.wordAudio + w.audio;
+      var a = new Audio(encodeURI(url));
+      __fcAudio = a;
+      a.addEventListener('ended', function() {
+        __fcAudio = null;
+        if (autoActive) fcNextAuto();
+      });
+      a.play().catch(function() {
+        __fcAudio = null;
+        if (autoActive) setTimeout(function() { fcNextAuto(); }, 1500);
+      });
+    } else {
+      if (autoActive) setTimeout(function() { fcNextAuto(); }, 1500);
+    }
+  }
+
   function fcStartAuto() {
     autoActive = true;
+    autoTimer = null; // no more setInterval, audio-driven
+    window._fcIdx = 0;
     window.renderFlashcards();
-    autoTimer = setInterval(function() {
-      var card = document.getElementById('fc-card');
-      if (card && !card.classList.contains('flipped')) {
-        card.classList.add('flipped');
-        var words = getFilteredWords();
-        var w = words[window._fcIdx || 0];
-        if (w && w.audio) playWordAudio(w.audio);
-        setTimeout(function() {
-          var words2 = getFilteredWords();
-          if ((window._fcIdx || 0) < words2.length - 1) { window._fcIdx++; window.renderFlashcards(); }
-          else { fcStopAuto(); }
-        }, 2000);
-      }
-    }, 4000);
+    setTimeout(function() { fcPlayAudioAndFlip(); }, 600);
   }
 
   function fcStopAuto() {
     autoActive = false;
-    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+    if (__fcAudio) { __fcAudio.pause(); __fcAudio = null; }
   }
 
   function getFilteredWords() {
