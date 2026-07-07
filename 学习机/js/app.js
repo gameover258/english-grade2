@@ -82,14 +82,13 @@
 
   function showOverlay(id, renderFn) { document.getElementById(id).className = 'overlay-active'; renderFn(); }
   function stopAllAudio() {
-    // 停止词汇表独立音频
-    if (typeof __vocabAudio !== 'undefined' && __vocabAudio) { __vocabAudio.pause(); __vocabAudio = null; }
-    __vocabActiveUnit = null;
-    updateAllVocabBtns();
-    // 停止闪卡独立音频
-    if (window.stopFlashcardAudio) window.stopFlashcardAudio();
-    // 停止全局课本播放器
-    if (window.stopAllAudio) window.stopAllAudio();
+    try {
+      if (typeof __vocabAudio !== 'undefined' && __vocabAudio) { __vocabAudio.pause(); __vocabAudio = null; }
+      __vocabActiveUnit = null;
+      updateAllVocabBtns();
+    } catch(e) {}
+    try { if (window.stopFlashcardAudio) window.stopFlashcardAudio(); } catch(e) {}
+    try { if (window.stopAllAudio) window.stopAllAudio(); } catch(e) {}
   }
 
   function hideOverlay(id) { document.getElementById(id).className = 'overlay-hidden'; }
@@ -102,8 +101,8 @@
     document.getElementById('btn-flashcards').onclick = function() { showOverlay('flashcard-overlay', renderFlashcards); };
     document.getElementById('btn-vocab').onclick = function() { showOverlay('vocab-overlay', renderVocab); };
 
-    document.getElementById('flashcard-close').onclick = function() { stopAllAudio(); hideOverlay('flashcard-overlay'); };
-    document.getElementById('vocab-close').onclick = function() { stopAllAudio(); hideOverlay('vocab-overlay'); };
+    document.getElementById('flashcard-close').onclick = function() { hideOverlay('flashcard-overlay'); try { stopAllAudio(); } catch(e) {} };
+    document.getElementById('vocab-close').onclick = function() { hideOverlay('vocab-overlay'); try { stopAllAudio(); } catch(e) {} };
 
     document.getElementById('video-close').onclick = hideVideoOverlay;
     document.getElementById('video-overlay-bg').onclick = hideVideoOverlay;
