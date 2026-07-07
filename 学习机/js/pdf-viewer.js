@@ -13,25 +13,48 @@
     var app = window.__app;
     if (!app) return;
     var s = app.state;
-    var u = s.currentUnit;
     var cur = s.currentPage;
     var tp = tbPage(cur);
-
     var src = PATHS.pages + 'p' + String(cur).padStart(3, '0') + '.jpg';
     var pageAudios = getPageAudios(cur);
     var pageVids = getPageVideos(cur);
 
-    var html = '<div class="pdf-page-wrap">';
-    html += '<div class="pdf-page-img-wrap">';
-    html += '<img src="' + src + '" alt="P' + tp + '" id="main-page-img">';
-    html += '</div></div>';
-
     var pdfEl = document.getElementById('pdf-container');
-    pdfEl.innerHTML = html;
-    applyZoom();
+    var oldImg = document.getElementById('main-page-img');
 
-    var img = document.getElementById('main-page-img');
-    if (img) img.onload = function() { applyZoom(); };
+    // 图片已是最新页 → 仅更新媒体
+    if (oldImg && oldImg.dataset.page == cur) {
+      window.__pageAudios = pageAudios;
+      window.__pageVids = pageVids;
+      updateIndicatorMenu();
+      return;
+    }
+
+    // 首次渲染 → 创建 DOM 结构
+    if (!oldImg) {
+      pdfEl.innerHTML = '<div class="pdf-page-wrap"><div class="pdf-page-img-wrap"><img id="main-page-img" alt=""></div></div>';
+      oldImg = document.getElementById('main-page-img');
+    }
+
+    var img = oldImg;
+    img.style.opacity = '0';
+
+    // 先用预加载 Image 加载完再设置 src（避免先显示旧图再换）
+    var preloader = new Image();
+    preloader.onload = function() {
+      img.src = src;
+      img.alt = 'P' + tp;
+      img.dataset.page = cur;
+      img.style.opacity = '1';
+      applyZoom();
+    };
+    preloader.onerror = function() {
+      img.src = src;
+      img.alt = 'P' + tp;
+      img.dataset.page = cur;
+      img.style.opacity = '1';
+    };
+    preloader.src = src;
 
     // 切换页面音频
     if (pageAudios.length > 0) {
@@ -46,7 +69,6 @@
       if (window.stopAllAudio) window.stopAllAudio();
     }
 
-    // 更新顶部指示器菜单数据
     window.__pageAudios = pageAudios;
     window.__pageVids = pageVids;
     updateIndicatorMenu();
@@ -74,32 +96,13 @@
     var h = '';
     for (var ai = 0; ai < audios.length; ai++) {
       var a = audios[ai];
-      h += '<button class="im-item" data-file="' + a.file + '" data-page="' + a.page + '" data-label="' + a.label + '" onclick="imPlay(this)">\ud83c\udfb5 ' + a.label + '</button>';
+      h += '<button class="im-item" data-file="' + a.file + '" data-page="' + a.page + '" data-label="' + a.label + '" onclick="imPlay(this)">🎵 ' + a.label + '</button>';
     }
     for (var vi = 0; vi < vids.length; vi++) {
       var v = vids[vi];
-      h += '<button class="im-item im-video" data-file="' + v.file + '" data-page="' + v.page + '" onclick="openVideoOverlay(this)">\ud83c\udfac ' + v.label + '</button>';
+      h += '<button class="im-item im-video" data-file="' + v.file + '" data-page="' + v.page + '" onclick="openVideoOverlay(this)">🎬 ' + v.label + '</button>';
     }
     menu.innerHTML = h;
-  }
-
-  /** 预加载相邻页面图片到浏览器缓存 */
-  var _preloadCache = {};
-  function preloadAdjacent(curPage) {
-    var pages = [];
-    for (var i = -3; i <= 3; i++) {
-      if (i === 0) continue;
-      var p = curPage + i;
-      if (p >= 1 && p <= TOTAL_PAGES && !_preloadCache[p]) {
-        _preloadCache[p] = true;
-        var img = new Image();
-        img.src = PATHS.pages + 'p' + String(p).padStart(3, '0') + '.jpg';
-      }
-    }
-    // 清理远离当前页的缓存标记（保留前后6页）
-    for (var key in _preloadCache) {
-      if (Math.abs(parseInt(key) - curPage) > 6) delete _preloadCache[key];
-    }
   }
 
   window.imPlay = function(btn) {
@@ -111,5 +114,22 @@
       label: btn.dataset.label
     });
   };
+
+  /** 预加载相邻页面图片 */
+  var _preloadCache = {};
+  function preloadAdjacent(curPage) {
+    for (var i = -3; i <= 3; i++) {
+      if (i === 0) continue;
+      var p = curPage + i;
+      if (p >= 1 && p <= TOTAL_PAGES && !_preloadCache[p]) {
+        _preloadCache[p] = true;
+        var img = new Image();
+        img.src = PATHS.pages + 'p' + String(p).padStart(3, '0') + '.jpg';
+      }
+    }
+    for (var key in _preloadCache) {
+      if (Math.abs(parseInt(key) - curPage) > 6) delete _preloadCache[key];
+    }
+  }
 
 })();
