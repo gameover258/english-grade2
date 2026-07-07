@@ -50,6 +50,7 @@
     window.__pageAudios = pageAudios;
     window.__pageVids = pageVids;
     updateIndicatorMenu();
+    preloadAdjacent(cur);
   };
 
   function applyZoom() {
@@ -80,6 +81,25 @@
       h += '<button class="im-item im-video" data-file="' + v.file + '" data-page="' + v.page + '" onclick="openVideoOverlay(this)">\ud83c\udfac ' + v.label + '</button>';
     }
     menu.innerHTML = h;
+  }
+
+  /** 预加载相邻页面图片到浏览器缓存 */
+  var _preloadCache = {};
+  function preloadAdjacent(curPage) {
+    var pages = [];
+    for (var i = -3; i <= 3; i++) {
+      if (i === 0) continue;
+      var p = curPage + i;
+      if (p >= 1 && p <= TOTAL_PAGES && !_preloadCache[p]) {
+        _preloadCache[p] = true;
+        var img = new Image();
+        img.src = PATHS.pages + 'p' + String(p).padStart(3, '0') + '.jpg';
+      }
+    }
+    // 清理远离当前页的缓存标记（保留前后6页）
+    for (var key in _preloadCache) {
+      if (Math.abs(parseInt(key) - curPage) > 6) delete _preloadCache[key];
+    }
   }
 
   window.imPlay = function(btn) {
