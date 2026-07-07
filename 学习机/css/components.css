@@ -160,7 +160,7 @@
 .vocab-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .vocab-table th, .vocab-table td { padding: 6px 10px; text-align: left; border-bottom: 1px solid #EDF2F7; }
 .vocab-table th { font-size: 11px; color: var(--text-light); font-weight: 700; background: #F7FAFC; }
-.vocab-table .vocab-en { font-family: var(--font-en); font-weight: 600; font-size: 15px; }
+.vocab-table .vocab-en { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; font-weight: 600; font-size: 15px; }
 .vocab-table .vocab-sound-btn { background: none; border: none; font-size: 16px; cursor: pointer; padding: 4px 6px; border-radius: 4px; }
 .vocab-table .vocab-sound-btn:hover { background: #E3F2FD; }
 /* ===== 页面内嵌媒体条 ===== */
